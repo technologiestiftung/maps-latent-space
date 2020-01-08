@@ -14,9 +14,12 @@ import socket
 parser = argparse.ArgumentParser(
     description="Allows user to navigate through latent space with user input received as json")
 parser.add_argument('-p', '--port', nargs='?', type=int, default='9999')
+parser.add_argument( '--host', nargs='?', default='localhost')
+
 args = parser.parse_args()
 
 PORT = args.port
+HOST = args.host
 
 tflib.init_tf()
 with open("maps-model/network-snapshot-011760.pkl", "rb") as f:
@@ -94,7 +97,7 @@ def latent_navigation(data):
         fmt = dict(func=tflib.convert_images_to_uint8, nchw_to_nhwc=True)
         img = Gs.run(latent, None, truncation_psi=0.7, randomize_noise=True, output_transform=fmt)
         png = Image.fromarray(img[0], 'RGB')
-        img_user = "custom-map.png"
+        img_user = "out/custom-map.png"
         png.save(img_user)
 
         global out_json
@@ -109,7 +112,7 @@ def latent_navigation(data):
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind(("localhost", PORT))
+    s.bind((HOST, PORT))
     s.listen()
     conn, addr = s.accept()
 
