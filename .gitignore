@@ -1,6 +1,8 @@
 .vscode
 .idea
 *.pkl
+ml/out/*.png
+ml/latent.npy
 #---------------
 # Logs
 logs
