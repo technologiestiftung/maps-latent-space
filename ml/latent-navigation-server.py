@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pickle
-import dnnlib.tflib as tflib
+import ml.dnnlib.tflib as tflib
 import numpy as np
 import argparse
 import json
@@ -10,6 +10,8 @@ from PIL import Image
 from numpy import load
 from numpy import save
 import socket
+import sys
+from ml.utils import recv_msg, send_msg
 
 parser = argparse.ArgumentParser(
     description="Allows user to navigate through latent space with user input received as json")
@@ -105,7 +107,7 @@ def latent_navigation(data):
         # if there is a given ID in received json object as the 9th element,
         #  add the same ID value to the output for possible comparison
         if len(values) == 9:
-            out_dict['id'] = int(values[8])
+            out_dict['id'] = values[8]
 
         out_json = json.dumps(out_dict)
         return out_json
@@ -114,14 +116,25 @@ def latent_navigation(data):
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen()
-    conn, addr = s.accept()
-
-    with conn:
-        print('Connected by', addr)
-        while True:
-            data = conn.recv(5000)
+    while True:
+        conn, addr = s.accept()
+        try:
+            data = recv_msg(conn)
+            print("raw", data)
             if not data:
                 break
-            latent_navigation(data)
-            conn.sendall(out_json.encode('utf-8'))
-            # print('data received', data)
+            elif data == 'killsrv':
+                conn.close()
+                sys.exit()
+            else:
+                try:
+                    parsed_json = json.loads(data)
+                    print("parsed", parsed_json)
+                except ValueError:
+                    print("json parsing error")
+                out_dict = {'status': 'okay', 'file': 'custom-map.png'}
+                out_json = json.dumps(out_dict)
+                send_msg(out_json.encode('utf-8'))
+        except KeyboardInterrupt:
+            conn.close()
+            sys.exit()
