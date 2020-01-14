@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import os
 import pickle
-import ml.dnnlib.tflib as tflib
+import dnnlib.tflib as tflib
 import numpy as np
 import argparse
 import json
@@ -11,12 +11,13 @@ from numpy import load
 from numpy import save
 import socket
 import sys
-from ml.utils import recv_msg, send_msg
+from utils import recv_msg, send_msg
 
 parser = argparse.ArgumentParser(
     description="Allows user to navigate through latent space with user input received as json")
 parser.add_argument('-p', '--port', nargs='?', type=int, default='9999')
 parser.add_argument( '--host', nargs='?', default='localhost')
+parser.add_argument('-v', '--verbose', type=bool, default=False)
 
 args = parser.parse_args()
 
@@ -102,12 +103,12 @@ def latent_navigation(data):
         img_user = "out/custom-map.png"
         png.save(img_user)
 
-        global out_json
-        out_dict = {'status': 'okay', 'file': 'custom-map.png'}
+        # global out_json
+        out_dict = {'status': 'okay', 'file': img_user}
         # if there is a given ID in received json object as the 9th element,
         #  add the same ID value to the output for possible comparison
         if len(values) == 9:
-            out_dict['id'] = values[8]
+            out_dict['id'] = int(values[8])
 
         out_json = json.dumps(out_dict)
         return out_json
@@ -120,21 +121,18 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         conn, addr = s.accept()
         try:
             data = recv_msg(conn)
-            print("raw", data)
+            if args.verbose:
+                print("raw", data)
             if not data:
                 break
-            elif data == 'killsrv':
+            elif data == b'killsrv':
+                if args.verbose:
+                    print("terminate server")
                 conn.close()
                 sys.exit()
             else:
-                try:
-                    parsed_json = json.loads(data)
-                    print("parsed", parsed_json)
-                except ValueError:
-                    print("json parsing error")
-                out_dict = {'status': 'okay', 'file': 'custom-map.png'}
-                out_json = json.dumps(out_dict)
-                send_msg(out_json.encode('utf-8'))
+                out_json = latent_navigation(data)
+                send_msg(conn, out_json.encode('utf-8'))
         except KeyboardInterrupt:
             conn.close()
             sys.exit()
