@@ -23,7 +23,8 @@ def recv_msg(conn):
         return None
     n_message = struct.unpack('>I', n_message)[0]
     # Read the message data
-    return _recv_msg_n(conn, n_message)
+    data = _recv_msg_n(conn, n_message)
+    return data
 
 
 def _recv_msg_n(conn, n):
