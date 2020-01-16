@@ -8,4 +8,4 @@ COPY . .
 EXPOSE 9999
 # CMD ["echo", "not working"]
 ENTRYPOINT ["python", "latent-navigation-server.py"]
-CMD ["--port", "9999", "--host", "0.0.0.0"]
+CMD ["--port", "9999", "--host", "0.0.0.0", "--verbose", "True"]
