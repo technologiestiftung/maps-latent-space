@@ -1,0 +1,28 @@
+{
+  "name": "@tsb/maps-latent-space-server",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "just ts",
+    "just": "just-scripts",
+    "dev": "just ts:watch",
+    "nodemon": "nodemon",
+    "test": "just-scripts test",
+    "change": "beachball change",
+    "gen": "plop"
+  },
+  "devDependencies": {
+    "beachball": "^1.12.1",
+    "just-scripts": "^0.27.0",
+    "just-stack-single-lib": "^1.0.0",
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.2",
+    "@types/socket.io": "^2.1.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}
