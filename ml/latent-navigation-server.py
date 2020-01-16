@@ -10,11 +10,14 @@ from PIL import Image
 from numpy import load
 from numpy import save
 import socket
+import sys
+from utils import recv_msg, send_msg
 
 parser = argparse.ArgumentParser(
     description="Allows user to navigate through latent space with user input received as json")
 parser.add_argument('-p', '--port', nargs='?', type=int, default='9999')
 parser.add_argument( '--host', nargs='?', default='localhost')
+parser.add_argument('-v', '--verbose', type=bool, default=False)
 
 args = parser.parse_args()
 
@@ -100,8 +103,8 @@ def latent_navigation(data):
         img_user = "out/custom-map.png"
         png.save(img_user)
 
-        global out_json
-        out_dict = {'status': 'okay', 'file': 'custom-map.png'}
+        # global out_json
+        out_dict = {'status': 'okay', 'file': img_user}
         # if there is a given ID in received json object as the 9th element,
         #  add the same ID value to the output for possible comparison
         if len(values) == 9:
@@ -114,14 +117,22 @@ def latent_navigation(data):
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
     s.listen()
-    conn, addr = s.accept()
-
-    with conn:
-        print('Connected by', addr)
-        while True:
-            data = conn.recv(5000)
+    while True:
+        conn, addr = s.accept()
+        try:
+            data = recv_msg(conn)
+            if args.verbose:
+                print("raw", data)
             if not data:
                 break
-            latent_navigation(data)
-            conn.sendall(out_json.encode('utf-8'))
-            # print('data received', data)
+            elif data == b'killsrv':
+                if args.verbose:
+                    print("terminate server")
+                conn.close()
+                sys.exit()
+            else:
+                out_json = latent_navigation(data)
+                send_msg(conn, out_json.encode('utf-8'))
+        except KeyboardInterrupt:
+            conn.close()
+            sys.exit()
