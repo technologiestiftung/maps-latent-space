@@ -4,14 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="assets/css/main.css">
   </head>
   <body>
-    <script>
-      const socket = io("http://localhost");
-      setInterval(() => {
-        socket.emit("message", { my: "data" });
-      }, 500);
-    </script>
+    <div class="container">
+      <img src="/images/custom-map.png" alt="" id="map">
+      <button id="calc">calculate</button>
+    </div>
+    <script type="module" src="/assets/js/main.mjs"></script>
   </body>
 </html>
