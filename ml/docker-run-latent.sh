@@ -6,6 +6,7 @@ NAME="latent"
 REPO="technologiestiftung/maps-latent-space"
 TAG="latest"
 PWD=$(pwd)
+INTERACTIVE=
 
 print_usage() {
    printf "\n\nUsage:------------------------------\n"
@@ -16,11 +17,12 @@ print_usage() {
 
  }
 
-while getopts "n:t:r:h" flag; do
+while getopts "n:t:r:ih" flag; do
   case "${flag}" in
     t) TAG="${OPTARG}" ;;
     n) NAME="${OPTARG}" ;;
     r) REPO="${OPTARG}" ;;
+    i) INTERACTIVE=1 ;;
     h) print_usage
     exit 1 ;;
     *) print_usage
@@ -40,5 +42,9 @@ if [ ! "$(docker ps -q -f name=$NAME)" ]; then
         docker rm "${NAME}"
     fi
     # run your container
-    docker run -p 9999:9999 -it --name "${NAME}" --gpus all  -v "${PWD}/out":/workdir/out "${REPO}:${TAG}"
+      if [ ! -z "$INTERACTIVE" ]; then
+        docker run -p 9999:9999 -it --name "${NAME}" --gpus all  -v "${PWD}/out":/workdir/out "${REPO}:${TAG}"
+      else
+      docker run -p 9999:9999 --name "${NAME}" --gpus all  -v "${PWD}/out":/workdir/out "${REPO}:${TAG}"
+    fi
 fi
