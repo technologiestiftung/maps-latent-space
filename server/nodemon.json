@@ -6,7 +6,7 @@
       "node_modules/**/node_modules"
     ],
     "watch": ["./src"],
-    "exec": "npm run build && node --max-old-space-size=4096 -r dotenv/config --inspect=127.0.0.1:9228 lib/index.js",
+    "exec": "npm run build && node lib/index.js",
     "ext": "ts,json",
     "restartable": "rs",
     "verbose": true,
