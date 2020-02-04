@@ -5,14 +5,13 @@ import WebSocket from "ws";
 import http from "http";
 import { Board, Sensor, SensorOption } from "johnny-five";
 import EventEmitter from "events";
-import net from "net";
+import { createClient } from "./tcp-client";
 
 const app = express();
-const sclient = new net.Socket();
 class Notify extends EventEmitter {}
 const notify = new Notify();
-let mlIsProcessing = false;
-
+const HOST = "127.0.0.1";
+const SOCKET_PORT = 9999;
 const board = new Board({ repl: false, port: "/dev/ttyACM0" });
 /**
  * Express specific stuff
@@ -21,12 +20,8 @@ const board = new Board({ repl: false, port: "/dev/ttyACM0" });
 app.use(cors());
 const sensors: Sensor[] = [];
 const sensorValues: number[] = [0, 0, 0, 0, 0, 0];
-const pins = ["A0" /*, "A1", "A2", "A4", "A5", "A6"*/];
-const HOST = "127.0.0.1";
-const SOCKET_PORT = 9999;
-const sClientConnectCB: () => void = () => {
-  console.info("INFO:ML: socket client is connected");
-};
+const pins = ["A0", "A1" /*, "A2", "A4", "A5", "A6"*/];
+
 app.use(express.static(path.resolve(__dirname, "../../client")));
 app.use("/images", express.static(path.resolve(__dirname, "../../ml/out")));
 app.get("/", (_req, res) => {
@@ -39,54 +34,34 @@ app.get("/", (_req, res) => {
  */
 export const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+// sclient.connect(SOCKET_PORT, HOST, sClientConnectCB);
+// sclient.setKeepAlive(true, 5000);
 
-sclient.connect(SOCKET_PORT, HOST, sClientConnectCB);
-sclient.setKeepAlive(true, 5000);
-
-sclient.on("close", hadError => {
-  console.info("INFO:ML: connection closed");
-  if (hadError) {
-    console.error("INFO:ML: with error");
-  }
-});
+// sclient.on("close", hadError => {
+//   console.info("INFO:ML: connection closed");
+//   if (hadError) {
+//     console.error("INFO:ML: with error");
+//   }
+// });
 /**
  * We are getting data back frpm the python process
  * Socket Stuff
  */
-sclient.on("data", function(data) {
-  console.info("INFO:ML: Received: " + data.readUIntBE(0, 4));
-  const res = data.slice(4, data.length);
-  console.info("INFO:ML: ", JSON.parse(res.toString()));
-  notify.emit("frontend_update");
-  setTimeout(() => {
-    mlIsProcessing = false;
-  }, 1000);
-  // sclient.destroy(); // kill client after server's response
-});
-/**
- * Catch errors doming from socket
- */
-sclient.on("error", err => {
-  console.error("ERROR:ML:", err);
-  if (err.name === "ERR_STREAM_DESTROYED") {
-    sclient.connect(SOCKET_PORT, HOST, sClientConnectCB);
-  }
-});
 
-sclient.on("drain", () => {
-  console.info("INFO:ML: socket got drained");
-});
-sclient.on("timeout", () => {
-  console.error("ERROR:ML: timeout on stream");
-});
 /**
  * Send data to the ML Python process
  *
  */
 notify.on("ml_update", () => {
-  mlIsProcessing = true;
-  // sclient.connect(9999, "127.0.0.1", function() {
-  console.info("INFO:ML: sending data");
+  const sclient = createClient({ host: HOST, port: SOCKET_PORT });
+  sclient.on("data", function(data) {
+    const res = data.toString().slice(4, data.length);
+    console.info(`INFO:TCP:CLIENT: response ${res}`);
+    notify.emit("frontend_update");
+    sclient.destroy();
+  });
+
+  const id = String(Math.floor(Math.random() * 1000)).padStart(4, "0");
   const data = {
     "1": sensorValues[0],
     "2": sensorValues[1],
@@ -96,15 +71,19 @@ notify.on("ml_update", () => {
     "6": sensorValues[5],
     "7": 0,
     "8": 0,
-    "9": "1234"
+    "9": id
   };
+  console.info("INFO:ML: sending data", data);
   const buf = Buffer.from(JSON.stringify(data));
   const len = Buffer.alloc(4);
   len.writeUInt32BE(buf.length, 0);
-  sclient.write(Buffer.concat([len, buf]));
-  // sclient.end(() => {
-  //   console.info("INFO:ML: tranmision end");
-  // });
+  const out = Buffer.concat([len, buf], buf.length + 4);
+  sclient.write(out, err => {
+    if (err) {
+      console.error(`ERROR:TCP:CLIENT: ${err}`);
+    }
+    // mlIsProcessing = false;
+  });
 });
 
 /**
@@ -177,7 +156,6 @@ board.on("ready", () => {
         );
         sensorValues[i] = sensor.fscaleTo(-1, 1);
         notify.emit("frontend_values");
-        console.log(mlIsProcessing, "mlIsProcessing");
         // if (mlIsProcessing === false) {
         notify.emit("ml_update");
         // }

@@ -17,6 +17,7 @@
     "@types/cors": "^2.8.6",
     "@types/express-ws": "^3.0.0",
     "@types/johnny-five": "^1.3.0",
+    "@types/shortid": "0.0.29",
     "@types/ws": "^7.2.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
@@ -40,6 +41,7 @@
     "johnny-five": "^1.4.0",
     "jspack": "0.0.4",
     "on-change": "^1.6.2",
+    "shortid": "^2.2.15",
     "ws": "^7.2.1"
   }
 }
