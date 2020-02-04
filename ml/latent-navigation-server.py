@@ -23,6 +23,7 @@ args = parser.parse_args()
 
 PORT = args.port
 HOST = args.host
+VERBOSE = args.verbose
 
 tflib.init_tf()
 with open("maps-model/network-snapshot-011760.pkl", "rb") as f:
@@ -116,13 +117,27 @@ def latent_navigation(data):
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
+    # check and turn on TCP Keepalive
+    x = s.getsockopt( socket.SOL_SOCKET, socket.SO_KEEPALIVE)
+    if( x == 0):
+        if args.verbose:
+            print ("Socket Keepalive off, turning on")
+        x = s.setsockopt( socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+        if args.verbose:
+            print ("setsockopt=", x)
+    else:
+        if args.verbose:
+            print ("Socket Keepalive already on")
     s.listen()
     while True:
         conn, addr = s.accept()
         try:
             data = recv_msg(conn)
+            print(data)
             if args.verbose:
+                # got incomping data
                 print("raw", data)
+            # no incoming data
             if not data:
                 break
             elif data == b'killsrv':
@@ -132,6 +147,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 sys.exit()
             else:
                 out_json = latent_navigation(data)
+                if args.verbose:
+                    print("sending data back")
                 send_msg(conn, out_json.encode('utf-8'))
         except KeyboardInterrupt:
             conn.close()
