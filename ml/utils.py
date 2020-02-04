@@ -8,6 +8,7 @@ def send_msg(conn, msg):
     :param msg: string containing msg
     """
     msg = struct.pack('>I', len(msg)) + msg
+    print("before connn.sendall", msg)
     conn.sendall(msg)
 
 
