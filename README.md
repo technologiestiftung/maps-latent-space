@@ -1,9 +1,9 @@
 # Maps Latent Space
 
 An AI exploration on how to create maps and a infrastructure to display it in an exhibition space.
-
 A collaboration between Birds On Mars and Technologiestiftung Berlin/CityLAB.  
 
+---
 
 This repository contains:
 
@@ -14,8 +14,5 @@ This repository contains:
 
 ## Todo
 
-- [ ] Build the exponat
+- [ ] Build the exhibit
 - [ ] Test with all potentiometers connected
-
-
-
