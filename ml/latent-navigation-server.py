@@ -10,13 +10,20 @@ from PIL import Image
 from numpy import load
 from numpy import save
 import socket
+import sys
+from utils import recv_msg, send_msg
 
 parser = argparse.ArgumentParser(
     description="Allows user to navigate through latent space with user input received as json")
 parser.add_argument('-p', '--port', nargs='?', type=int, default='9999')
+parser.add_argument( '--host', nargs='?', default='localhost')
+parser.add_argument('-v', '--verbose', type=bool, default=False)
+
 args = parser.parse_args()
 
 PORT = args.port
+HOST = args.host
+VERBOSE = args.verbose
 
 tflib.init_tf()
 with open("maps-model/network-snapshot-011760.pkl", "rb") as f:
@@ -94,11 +101,11 @@ def latent_navigation(data):
         fmt = dict(func=tflib.convert_images_to_uint8, nchw_to_nhwc=True)
         img = Gs.run(latent, None, truncation_psi=0.7, randomize_noise=True, output_transform=fmt)
         png = Image.fromarray(img[0], 'RGB')
-        img_user = "custom-map.png"
+        img_user = "out/custom-map.png"
         png.save(img_user)
 
-        global out_json
-        out_dict = {'status': 'okay', 'file': 'custom-map.png'}
+        # global out_json
+        out_dict = {'status': 'okay', 'file': img_user}
         # if there is a given ID in received json object as the 9th element,
         #  add the same ID value to the output for possible comparison
         if len(values) == 9:
@@ -109,16 +116,41 @@ def latent_navigation(data):
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind(("localhost", PORT))
+    s.bind((HOST, PORT))
+    # check and turn on TCP Keepalive
+    # x = s.getsockopt( socket.SOL_SOCKET, socket.SO_KEEPALIVE)
+    # if( x == 0):
+    #     if args.verbose:
+    #         print ("Socket Keepalive off, turning on")
+    #     x = s.setsockopt( socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    #     if args.verbose:
+    #         print ("setsockopt=", x)
+    # else:
+    #     if args.verbose:
+    #         print ("Socket Keepalive already on")
     s.listen()
-    conn, addr = s.accept()
-
-    with conn:
-        print('Connected by', addr)
-        while True:
-            data = conn.recv(5000)
+    while True:
+        conn, addr = s.accept()
+        try:
+            data = recv_msg(conn)
+            print("Received data",data)
+            if args.verbose:
+                # got incomping data
+                print("raw", data)
+            # no incoming data
             if not data:
+                print("break")
                 break
-            latent_navigation(data)
-            conn.sendall(out_json.encode('utf-8'))
-            # print('data received', data)
+            elif data == b'killsrv':
+                if args.verbose:
+                    print("terminate server")
+                conn.close()
+                sys.exit()
+            else:
+                out_json = latent_navigation(data)
+                if args.verbose:
+                    print("sending data back")
+                send_msg(conn, out_json.encode('utf-8'))
+        except KeyboardInterrupt:
+            conn.close()
+            sys.exit()

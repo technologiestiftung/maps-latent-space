@@ -1,0 +1,11 @@
+FROM tensorflow/tensorflow:1.14.0-gpu-py3
+RUN mkdir /workdir
+WORKDIR /workdir
+COPY docker-requirements.txt requirements.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
+COPY . .
+
+EXPOSE 9999
+# CMD ["echo", "not working"]
+ENTRYPOINT ["python", "latent-navigation-server.py"]
+CMD ["--port", "9999", "--host", "0.0.0.0", "--verbose", "True"]
