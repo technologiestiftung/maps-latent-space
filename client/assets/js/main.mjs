@@ -1,13 +1,17 @@
 const imagePath = "/images/custom-map.png";
 const socketAddress = `ws://${window.location.host}`;
-document.addEventListener("DOMContentLoaded", function() {
+const sensorValues = [0, 0, 0, 0, 0, 0, 0];
+document.addEventListener("DOMContentLoaded", function () {
+  const inputs = document.querySelectorAll(".input__range--feature");
+
   const calcbutton = document.querySelector("#calc");
   if (calcbutton === null) {
     throw new Error("could not find button");
   }
+
   let socket;
 
-  const socketMessageListener = event => {
+  const socketMessageListener = (event) => {
     console.log('event["data"]', event.data);
     try {
       const json = JSON.parse(event.data);
@@ -27,11 +31,25 @@ document.addEventListener("DOMContentLoaded", function() {
       console.warn("could not parse JSON from backend");
     }
   };
-  const socketOpenListner = event => {
-    socket.send("Hello server");
-    calcbutton.addEventListener("click", event => {
+  const socketOpenListner = (event) => {
+    Array.from(inputs).forEach((input) => {
+      input.addEventListener("change", (event) => {
+        console.log(event);
+        const id = parseInt(event.target.id.split("-")[1], 10);
+        if (!isNaN(id)) {
+          // console.log(event.target.valueAsNumber);
+          if (id - 1 >= 0 && id - 1 < 6) {
+            sensorValues[id - 1] = event.target.valueAsNumber;
+            socket.send(JSON.stringify({ sensorValues }));
+          }
+        }
+      });
+    });
+    calcbutton.addEventListener("click", (event) => {
       event.preventDefault();
-      socket.send("calc");
+      sensorValues[6] = 1;
+      socket.send(JSON.stringify({ sensorValues }));
+      sensorValues[6] = 0;
     });
   };
   // socket.onclose =
@@ -40,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function() {
   //     socket.removeEventListener("message");
   //     socket.removeEventListener("open");
   //   });
-  const SocketCloseListner = event => {
+  const SocketCloseListner = (event) => {
     if (socket) {
       console.error("Socket was closed");
     }

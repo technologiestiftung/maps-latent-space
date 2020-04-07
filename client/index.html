@@ -4,13 +4,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/main.css" />
   </head>
   <body>
     <div class="container">
-      <img src="/images/custom-map.png" alt="" id="map">
-      <button id="calc">calculate</button>
+      <img src="/images/custom-map.png" alt="" id="map" />
+      <button id="calc" class="button">Recalculate</button>
+      <div class="inputs__range--flex">
+        <div class="input__range--item">
+          <label for="feature-1">Feature Direction 1</label>
+          <input
+            type="range"
+            step="any"
+            id="feature-1"
+            name="feature-1"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+        <div class="input__range--item">
+          <label for="feature-2">Feature Direction 2</label>
+          <input
+            type="range"
+            step="any"
+            name="feature-2"
+            id="feature-2"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+        <div class="input__range--item">
+          <label for="feature-3">Feature Direction 3</label>
+          <input
+            type="range"
+            step="any"
+            name="feature-3"
+            id="feature-3"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+
+        <div class="input__range--item">
+          <label for="feature-4">Feature Direction 4</label>
+          <input
+            type="range"
+            step="any"
+            name="feature-4"
+            id="feature-4"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+        <div class="input__range--item">
+          <label for="feature-5">Feature Direction 5</label>
+          <input
+            type="range"
+            step="any"
+            name="feature-5"
+            id="feature-5"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+        <div class="input__range--item">
+          <label for="feature-6">Feature Direction 6</label>
+          <input
+            type="range"
+            step="any"
+            name="feature-6"
+            id="feature-6"
+            min="-1"
+            max="1"
+            class="input__range--feature"
+          />
+        </div>
+      </div>
     </div>
+
     <script type="module" src="/assets/js/main.mjs"></script>
   </body>
 </html>

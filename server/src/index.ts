@@ -1,3 +1,34 @@
+import meow from "meow";
+import { config } from "./config";
+
+const cli = meow(
+  `
+  Usage:
+  $ node ${process.argv[1]} --hardware --port "/dev/ttyACM0"
+
+  Flags:
+    -H --hardware  Use hardware controllers
+       --help      print this message and exit
+    -p --port      Port to use default "/dev/ttyACM0"
+`,
+  {
+    flags: {
+      port: {
+        alias: "p",
+        default: "/dev/ttyACM0",
+        type: "string"
+      },
+      hardware: {
+        alias: "H",
+        default: false,
+        type: "boolean"
+      }
+    }
+  }
+);
+
+config.useHardware = cli.flags.hardware;
+
 import { server } from "./app";
 // import { mlProcess } from "./ml-process";
 // mlProcess();
@@ -16,6 +47,7 @@ server.listen(PORT, () => {
 // a graceful shutdown of node process
 //
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sockets: { [key: string]: any } = {};
 let nextSocketId = 0;
 function waitForSocketsToClose(counter: number): number | undefined {

@@ -17,3 +17,14 @@ img#map {
   width: 500;
   height: 500;
 }
+
+.inputs__range--flex{
+  display: flex;
+  flex-direction: column;
+}
+.input__range--item{
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+}
