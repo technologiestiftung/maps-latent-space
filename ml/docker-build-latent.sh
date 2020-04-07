@@ -4,6 +4,7 @@ IFS=$'\n\t'
 TAG="latest"
 REPOSITORY="technologiestiftung/maps-latent-space"
 DOCKERFILE="Dockerfile"
+YES=false
 print_usage() {
    printf "\n\nUsage:------------------------------\n"
    printf "Usage: %s -t yourtag\n -y" "${0}"
@@ -16,11 +17,9 @@ print_usage() {
 while getopts "hyt:f:" flag; do
   case "${flag}" in
    t) TAG="${OPTARG}"
-     shift
       ;;
       f) DOCKERFILE="${OPTARG}"
-      shift
-      ;;
+            ;;
     y) YES=true ;;
     h) print_usage
         exit 1 ;;
@@ -33,17 +32,17 @@ done
 shift $(( OPTIND-1 ))
 
 echo
-printf "\tYour image will be build with this repository/tag:\n"
+printf "\tYour image will be build with this repository:tag\n"
 printf "\t%s:%s\n" "${REPOSITORY}" "${TAG}"
 printf "Using as Dockerfile %s" "${DOCKERFILE}"
 echo
 echo
-if [[ -v YES ]]; then
-docker build --tag "${REPOSITORY}:${TAG}" . && exit
+if [[ $YES == true ]]; then
+docker build -f "${DOCKERFILE}" --tag "${REPOSITORY}:${TAG}" . && exit
 fi
 
 while true; do
-    read -p "Do you want to proceed (y/n)? " yn
+    read -rp "Do you want to proceed (y/n)? " yn
     case $yn in
         [Yy]* ) docker build -f "${DOCKERFILE}" --tag "${REPOSITORY}:${TAG}" . ; break;;
         [Nn]* ) exit;;
