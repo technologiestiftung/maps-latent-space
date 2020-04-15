@@ -6,6 +6,7 @@ from utils import send_msg, recv_msg
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--verbose', '-v', help='verbose', type=bool, default=False)
+parser.add_argument('-p', '--port', nargs='?', type=int, default='9999')
 parser.add_argument('--terminate', help='terminate server', type=bool, default=False)
 args = parser.parse_args()
 
@@ -15,7 +16,7 @@ else:
     data = '{"1": 0, "2": 0, "3": 0, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": "1234"}'
     # data = '{"1": 10, "2": 30, "3": 60, "4": 80, "5": 90, "6": 0, "7": 1, "8": 0}'
 
-PORT = 9999
+PORT = args.port
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
