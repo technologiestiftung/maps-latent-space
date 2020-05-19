@@ -1,7 +1,7 @@
 provider "aws" {
   region  = var.region
   profile = var.profile
-  version = "v2.56.0"
+  version = "2.62.0"
 }
 
 data "aws_ami" "ubuntu" {
