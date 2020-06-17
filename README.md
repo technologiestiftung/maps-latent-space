@@ -16,3 +16,10 @@ This repository contains:
 
 - [ ] Build the exhibit
 - [ ] Test with all potentiometers connected
+
+
+## Structure
+
+This is a simple diagram to show how the structure of the application is.
+
+![structure of the application diagram](./docs/maps-latent-space.png)

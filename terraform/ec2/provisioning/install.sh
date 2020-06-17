@@ -40,7 +40,6 @@ EOF
 # shellcheck disable=SC1091
 source "/home/ubuntu/.profile"
 nvm install lts/erbium
-# nvm alias default lts/erbium
 npm install pm2 -g || ech0 'could not install pm2 globally'
 sudo apt install git tmux zsh nginx docker.io -y
 cd /home/ubuntu
