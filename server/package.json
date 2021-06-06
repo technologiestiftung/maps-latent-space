@@ -52,7 +52,7 @@
     "meow": "6.1.0",
     "on-change": "1.6.2",
     "shortid": "2.2.15",
-    "ws": "7.2.1"
+    "ws": "7.4.6"
   },
   "prettier": {
     "printWidth": 80
