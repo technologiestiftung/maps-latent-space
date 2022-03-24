@@ -1,3 +1,5 @@
+![](https://img.shields.io/badge/Build%20with%20%E2%9D%A4%EF%B8%8F-at%20Technologiesitftung%20Berlin-blue)
+
 # Maps Latent Space
 
 An AI exploration on how to create maps and a infrastructure to display it in an exhibition space.
