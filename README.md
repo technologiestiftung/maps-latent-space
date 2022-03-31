@@ -36,6 +36,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://fabianmoronzirfas.me/"><img src="https://avatars.githubusercontent.com/u/315106?v=4?s=64" width="64px;" alt=""/><br /><sub><b>Fabian Morón Zirfas</b></sub></a><br /><a href="https://github.com/technologiestiftung/maps-latent-space/commits?author=ff6347" title="Code">💻</a> <a href="https://github.com/technologiestiftung/maps-latent-space/commits?author=ff6347" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/birdNicolas"><img src="https://avatars.githubusercontent.com/u/58516254?v=4?s=64" width="64px;" alt=""/><br /><sub><b>birdNicolas</b></sub></a><br /><a href="https://github.com/technologiestiftung/maps-latent-space/commits?author=birdNicolas" title="Code">💻</a></td>
   </tr>
 </table>
 
