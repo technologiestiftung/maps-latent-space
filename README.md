@@ -1,9 +1,9 @@
-![](https://img.shields.io/badge/Build%20with%20%E2%9D%A4%EF%B8%8F-at%20Technologiesitftung%20Berlin-blue)
+![](https://img.shields.io/badge/Built%20with%20%E2%9D%A4%EF%B8%8F-at%20Technologiestiftung%20Berlin-blue)
 
 # Maps Latent Space
 
 An AI exploration on how to create maps and a infrastructure to display it in an exhibition space.
-A collaboration between Birds On Mars and Technologiestiftung Berlin/CityLAB.  
+A collaboration between Birds On Mars and Technologiestiftung Berlin/CityLAB.
 
 ---
 
@@ -13,12 +13,10 @@ This repository contains:
 - [server](server/) A Express/Johnny Five server that takes care of routing requests from the hardware and the client to the ml Setup
 - [client](client/) A HTML frontend to display the generated maps.
 
-
 ## Todo
 
 - [ ] Build the exhibit
 - [ ] Test with all potentiometers connected
-
 
 ## Structure
 
